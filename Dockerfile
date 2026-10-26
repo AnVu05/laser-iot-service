@@ -20,8 +20,10 @@ RUN ./mvnw clean package -DskipTests
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-# Create a non-root system user for container security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Create a non-root system user for container security and grant directory permissions
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
+    && mkdir -p /app/storage/gcode-cache /tmp/gcode-cache \
+    && chown -R appuser:appgroup /app /tmp/gcode-cache
 USER appuser
 
 # Copy JAR from build stage

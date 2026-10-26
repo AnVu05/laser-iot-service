@@ -22,15 +22,29 @@ public class GcodeStorageService {
 
     private final Path storageDir;
 
-    public GcodeStorageService(@Value("${app.storage.gcode-dir:storage/gcode-cache}") String storagePath) {
-        this.storageDir = Paths.get(storagePath).toAbsolutePath().normalize();
-        try {
-            Files.createDirectories(this.storageDir);
-            log.info("[GCODE STORAGE] Thư mục lưu trữ tạm: {}", this.storageDir);
-        } catch (IOException e) {
-            log.error("[GCODE STORAGE] Không thể tạo thư mục lưu trữ: {}", this.storageDir, e);
-            throw new RuntimeException("Lỗi khởi tạo thư mục lưu trữ G-code", e);
+    public GcodeStorageService(@Value("${app.storage.gcode-dir:}") String storagePath) {
+        Path resolvedPath;
+        if (storagePath != null && !storagePath.isBlank()) {
+            resolvedPath = Paths.get(storagePath).toAbsolutePath().normalize();
+        } else {
+            resolvedPath = Paths.get(System.getProperty("java.io.tmpdir"), "gcode-cache").toAbsolutePath().normalize();
         }
+
+        try {
+            Files.createDirectories(resolvedPath);
+            log.info("[GCODE STORAGE] Thư mục lưu trữ tạm: {}", resolvedPath);
+        } catch (Exception e) {
+            log.warn("[GCODE STORAGE] Không thể tạo thư mục cấu hình ({}), tự động fallback sang thư mục temp hệ thống...", resolvedPath);
+            resolvedPath = Paths.get(System.getProperty("java.io.tmpdir"), "gcode-cache").toAbsolutePath().normalize();
+            try {
+                Files.createDirectories(resolvedPath);
+                log.info("[GCODE STORAGE] Thư mục lưu trữ fallback: {}", resolvedPath);
+            } catch (Exception ex) {
+                log.error("[GCODE STORAGE] Lỗi tạo thư mục lưu trữ G-code: {}", resolvedPath, ex);
+                throw new RuntimeException("Lỗi khởi tạo thư mục lưu trữ G-code", ex);
+            }
+        }
+        this.storageDir = resolvedPath;
     }
 
     public StorageResult saveGcode(String jobCode, String content) throws IOException {

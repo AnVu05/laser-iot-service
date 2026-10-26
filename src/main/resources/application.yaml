@@ -9,7 +9,7 @@ app:
   # Secret key bảo vệ Internal API giao tiếp với Web Backend
   internal-secret-key: ${INTERNAL_SECRET_KEY:laser-internal-secret-key-change-me}
   storage:
-    gcode-dir: ${STORAGE_GCODE_DIR:storage/gcode-cache}
+    gcode-dir: ${STORAGE_GCODE_DIR:/tmp/gcode-cache}
   device:
     default-code: LASER-HN-001
     default-token: ${DEVICE_DEFAULT_TOKEN:mks-dlc32-secret-token}
