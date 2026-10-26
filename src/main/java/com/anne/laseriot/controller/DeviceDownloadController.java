@@ -80,7 +80,7 @@ public class DeviceDownloadController {
             return ResponseEntity.ok()
                     .contentType(MediaType.TEXT_PLAIN)
                     .header("X-File-SHA256", job.getSha256Checksum())
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + jobCode + ".gcode\"")
                     .body(resource);
 
         } catch (IOException e) {
