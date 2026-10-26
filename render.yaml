@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: laser-iot-service
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: INTERNAL_SECRET_KEY
+        generateValue: true
+      - key: DEVICE_DEFAULT_TOKEN
+        value: mks-dlc32-secret-token
+    healthCheckPath: /actuator/health
